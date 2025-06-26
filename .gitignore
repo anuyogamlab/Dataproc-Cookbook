@@ -1,0 +1,8 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.vscode/ # If you also use VS Code, might as well add it
+.DS_Store # macOS system files (always good to include on Mac)
