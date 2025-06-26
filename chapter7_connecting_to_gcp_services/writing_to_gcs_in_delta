@@ -1,0 +1,27 @@
+from pyspark.sql import functions as f
+from pyspark import SparkConf
+from pyspark.sql import SparkSession
+from delta.tables import *
+
+# Create a SparkSession
+spark = SparkSession.builder.appName("CreateDeltaLakeTable").getOrCreate()
+
+# read data from Big Query
+wiki_data = (
+    spark.read.format("bigquery")
+    .option("table", "bigquery-samples.wikipedia_pageviews.200801h")
+    .load()
+)
+
+# Aggregations
+wiki_filtered = wiki_data.filter(
+    "month = 1"
+)
+
+wiki_insights_report = wiki_filtered.groupBy("language").agg(
+    f.sum("views").alias("TotalViews")
+)
+
+# Write to Delta Lake
+
+wiki_insights_report.write.format("delta").mode("append").save("gs://dataproc-cookbook/chapter7/temp/delta")
